@@ -16,6 +16,15 @@ import {
 } from "./CustomNode.styled";
 
 export const CustomNode = memo(({ data }: any) => {
+  const DateBirthday = new Date(data.birthday);
+  const formattedDate = `${String(DateBirthday.getDate()).padStart(
+    2,
+    "0"
+  )} ${String(DateBirthday.getMonth() + 1).padStart(
+    2,
+    "0"
+  )} ${DateBirthday.getFullYear()}`;
+
   return (
     <NodeContainer>
       <Node>
@@ -28,7 +37,7 @@ export const CustomNode = memo(({ data }: any) => {
             <NodeImage src={Image} alt="" />
             <ContainerPerson>
               <NamePerson>{data.name}</NamePerson>
-              <AgePerson>{data.birthday}</AgePerson>
+              <AgePerson>{formattedDate}</AgePerson>
             </ContainerPerson>
           </ContainerChild>
         </FullContainer>

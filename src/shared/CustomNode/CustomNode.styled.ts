@@ -7,7 +7,6 @@ export const NodeContainer = styled.div`
 `;
 
 export const Node = styled.div`
-  padding: 10px 20px;
   border-radius: 5px;
   background: #ffffff;
   color: black;
@@ -22,11 +21,7 @@ export const Node = styled.div`
     border-radius: 3px;
   }
 `;
-export const FullContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-`;
+export const FullContainer = styled.div``;
 
 export const NodeImage = styled.img`
   height: 70px;
@@ -38,9 +33,10 @@ export const NodeImage = styled.img`
 export const ContainerPerson = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 
   gap: 9px;
+  width: 100%;
 `;
 
 export const Status = styled.div`
@@ -62,11 +58,9 @@ export const ContainerChild = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-
   padding: 9px;
   border-radius: 10px;
-
   margin-top: 12px;
-  gap: 9px;
+  gap: 20px;
 `;
 export const AgePerson = styled.div``;

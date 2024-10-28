@@ -89,11 +89,14 @@ function SpouseEdit() {
               <Typography.Text mark>
                 Source: {memberMap[item.spouse1] || item.spouse1}{" "}
                 {/* Display name instead of ID */}
-              </Typography.Text>{" "}
+              </Typography.Text>
+              {"   "}
               <Typography.Text mark>
-                Target: {memberMap[item.spouse2] || item.spouse2}{" "}
+                Target: {memberMap[item.spouse2] || item.spouse2}
+                {"   "}
                 {/* Display name instead of ID */}
-              </Typography.Text>{" "}
+              </Typography.Text>
+              {"  "}
               <Typography.Text mark>
                 isDivorced: {item.isDivorced}
               </Typography.Text>{" "}
