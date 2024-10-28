@@ -6,9 +6,22 @@ export interface CreatedFamilyMember {
 }
 
 export interface FamilyMember {
-  id?: string;
+  id(id: any): void;
+  _id?: string;
   name: string;
-  birthDate: string;
+  birthday: string;
   mother?: string | null;
   father?: string | null;
+}
+
+export interface IFamilyNode {
+  id: string;
+  data: {
+    name: string;
+    birthday: string;
+    father: string;
+    mother: string;
+  };
+  position: { x: number; y: number };
+  type: string;
 }

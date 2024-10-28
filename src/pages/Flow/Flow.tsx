@@ -1,34 +1,32 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ReactFlow,
-  addEdge,
-  ConnectionLineType,
-  Panel,
+  Controls,
+  Background,
+  applyNodeChanges,
+  NodeChange,
   useNodesState,
   useEdgesState,
-  Controls,
-  MiniMap,
-  Background,
 } from "@xyflow/react";
-import dagre from "@dagrejs/dagre";
-
-import "@xyflow/react/dist/style.css";
-
-import { initialNodes, initialEdges } from "../../data/nodes-edges";
-import DownloadButton from "../../widgets/Dowload/Dowload";
+import dagre from "dagre";
+import axios from "axios";
 import { CustomNode } from "../../shared/CustomNode/CustomNode";
+import CustomEdge from "../../shared/CustomEdge/CustomEdge";
 
-const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-
-const nodeWidth = 500;
-const nodeHeight = 400;
+const nodeWidth = 500; // Ширина узла
+const nodeHeight = 400; // Высота узла
 
 const nodeTypes = {
   custom: CustomNode,
 };
-
+const edgeTypes = {
+  custom: CustomEdge,
+};
+// Функция для компоновки узлов с использованием Dagre
 const getLayoutedElements = (nodes: any[], edges: any[], direction = "TB") => {
   const isHorizontal = direction === "LR";
+  const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+
   dagreGraph.setGraph({ rankdir: direction });
 
   nodes.forEach((node) => {
@@ -41,68 +39,94 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = "TB") => {
 
   dagre.layout(dagreGraph);
 
-  const newNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    const newNode = {
+  return nodes.map((node) => {
+    const { x, y } = dagreGraph.node(node.id);
+    return {
       ...node,
-      targetPosition: isHorizontal ? "left" : "top",
-      sourcePosition: isHorizontal ? "right" : "bottom",
-      // We are shifting the dagre node position (anchor=center center) to the top left
-      // so it matches the React Flow node anchor point (top left).
-      position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
-      },
+      position: { x: x - nodeWidth / 2, y: y - nodeHeight / 2 },
     };
-
-    return newNode;
   });
-
-  return { nodes: newNodes, edges };
 };
 
-const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-  initialNodes,
-  initialEdges
-);
-
 export const Flow = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  const [familyMembers, setFamilyMembers] = useState([]);
+  const [familyNodes, setFamilyNodes] = useNodesState([]);
+  const [edges, setEdges] = useEdgesState([]);
 
-  const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge({ ...params }, eds)),
+  const onNodesChange = useCallback(
+    (changes: NodeChange<never>[]) =>
+      setFamilyNodes((nds) => applyNodeChanges(changes, nds)),
     []
   );
-  const onLayout = useCallback(
-    (direction: string | undefined) => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, direction);
 
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
-    },
-    [nodes, edges]
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Получаем данные о членах семьи
+        const membersResponse = await axios.get("http://localhost:8000/tree");
+        console.log("Family Members:", membersResponse.data); // Проверка данных
+        setFamilyMembers(membersResponse.data);
+
+        // Преобразование данных в узлы
+        const nodes = membersResponse.data.map(
+          (node: { [x: string]: any; _id: any; __v: any }) => {
+            const { _id, __v, ...rest } = node;
+            return {
+              id: _id,
+              data: { ...rest },
+              type: "custom",
+            };
+          }
+        );
+
+        console.log("Nodes:", nodes); // Проверка преобразованных узлов
+
+        // Получаем данные о супругах (edges)
+        const spousesResponse = await axios.get(
+          "http://localhost:8000/spouses"
+        );
+        console.log("Spouses:", spousesResponse.data); // Проверка данных о супругах
+
+        const edgesData = spousesResponse.data.map(
+          (spouse: {
+            spouse1: string;
+            spouse2: string;
+            isDivorced: string;
+          }) => ({
+            id: `e-${spouse.spouse1}-${spouse.spouse2}`, // Уникальный ID для ребра
+            source: spouse.spouse1,
+            target: spouse.spouse2,
+            label: spouse.isDivorced,
+            type: "custom",
+          })
+        );
+
+        console.log("Edges Data:", edgesData); // Проверка преобразованных рёбер
+
+        // Получение расположенных узлов
+        const layoutedNodes = getLayoutedElements(nodes, edgesData);
+        setFamilyNodes(layoutedNodes);
+        setEdges(edgesData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
-    <ReactFlow
-      style={{ backgroundColor: "#effdfa" }}
-      nodes={nodes}
-      edges={edges}
-      onConnect={onConnect}
-      connectionLineType={ConnectionLineType.SmoothStep}
-      nodeTypes={nodeTypes}
-      fitView
-    >
-      <Controls />
-      <MiniMap />
-
-      <Panel position="top-right">
-        <button onClick={() => onLayout("TB")}>vertical layout</button>
-        <button onClick={() => onLayout("LR")}>horizontal layout</button>
-      </Panel>
-      <DownloadButton />
-    </ReactFlow>
+    <div style={{ height: "100%" }}>
+      <ReactFlow
+        nodes={familyNodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+      >
+        <Background />
+        <Controls />
+      </ReactFlow>
+    </div>
   );
 };

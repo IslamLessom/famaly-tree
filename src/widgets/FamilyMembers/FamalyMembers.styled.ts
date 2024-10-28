@@ -1,3 +1,4 @@
+import { Input } from "antd";
 import styled from "styled-components";
 
 export const FamilyMembersContainer = styled.div`
@@ -19,6 +20,10 @@ export const FamilyMembersContainer = styled.div`
   padding-top: 70px;
   background-color: #7f56d9;
 `;
+export const SearchInput = styled(Input)`
+  width: 98%;
+  margin-bottom: 10px;
+`;
 export const FamilyMemberStyle = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -30,6 +35,7 @@ export const FamilyMemberStyle = styled.div`
   border-radius: 10px;
   width: 90%;
   border: 3px solid #d5d7da;
+  cursor: pointer;
 `;
 export const ImageMember = styled.img`
   width: 100px;

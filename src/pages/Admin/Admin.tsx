@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
   AdminContainer,
@@ -7,20 +7,48 @@ import {
   Title,
 } from "./Admin.styled";
 import { FamilyMembers } from "../../widgets/FamilyMembers/FamilyMembers";
-import { FamilyMember } from "./types/Types";
+import { FamilyMember, IFamilyNode } from "./types/Types";
 import FamilyMemberForm from "../../widgets/FamilyMemberForm/FamilyMemberForm";
+import axios from "axios";
 
 const Admin = () => {
   const [activeFamilyMemberId, setActiveFamilyMemberId] = useState<
     string | null
   >(null);
   const [familyMembers, setFamilyMembers] = useState<Array<FamilyMember>>([]);
+  const [familyNodes, setFamilyNodes] = useState<IFamilyNode[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/tree");
+        setFamilyMembers(response.data);
+        setFamilyNodes(
+          response.data.map((node: any) => {
+            // FIX
+            const { _id, __v, ...rest } = node;
+
+            return {
+              id: _id,
+              data: {
+                rest,
+              },
+            };
+          })
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleCreateFamilyMember = (createdFamilyMember: FamilyMember) => {
     setFamilyMembers((prev) => [
       ...prev,
       {
-        id: uuid(),
+        _id: uuid(),
         ...createdFamilyMember,
       },
     ]);
@@ -29,15 +57,14 @@ const Admin = () => {
   const updateFamilyMember = (updatedMember: FamilyMember) => {
     setFamilyMembers((prev) =>
       prev.map((member) =>
-        member.id === updatedMember.id ? updatedMember : member
+        member._id === updatedMember._id ? updatedMember : member
       )
     );
-    setActiveFamilyMemberId(null); // Сбрасываем активный ID после обновления
+    setActiveFamilyMemberId(null); // Reset active ID after updating
   };
 
-  const onEdit = (id: React.SetStateAction<string | null>) => {
-    console.log("Editing member with ID:", id);
-    setActiveFamilyMemberId(id);
+  const onEdit = (_id: string | null) => {
+    setActiveFamilyMemberId(_id);
   };
 
   return (
@@ -45,14 +72,14 @@ const Admin = () => {
       <Container>
         <FamilyMembers
           familyMembers={familyMembers}
-          onEdit={onEdit} // Передаем функцию onEdit
+          onEdit={onEdit} // Pass onEdit function
         />
         {activeFamilyMemberId != null ? (
           <CreateContainer>
             <Title>Edit Node</Title>
             <FamilyMemberForm
               familyMember={familyMembers.find(
-                (member) => member.id === activeFamilyMemberId
+                (member) => member._id === activeFamilyMemberId
               )}
               familyMembers={familyMembers}
               onSave={updateFamilyMember}

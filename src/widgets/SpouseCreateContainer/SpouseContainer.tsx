@@ -7,17 +7,13 @@ import {
   SelectInfo,
   TitleCreateHusbant,
 } from "./SpouseContainer.styled";
-import { v4 as uuid } from "uuid";
+import axios from "axios"; // Импортируем axios для запросов
 import { FamilyMember } from "../../pages/Admin/types/Types";
 
 interface Spouse {
-  id: number; // Или string, если вы будете использовать строковые идентификаторы
-}
-
-interface Pair {
-  id: string;
-  spouseValue: string;
-  isDivorced: boolean;
+  spouse1: string | null; // ID выбранного супруга
+  spouse2: string | null; // ID создаваемого супруга
+  isDivorced: string | null; // Статус развода
 }
 
 interface SpouseContainerProps {
@@ -27,77 +23,75 @@ interface SpouseContainerProps {
 const SpouseContainerComponent: React.FC<SpouseContainerProps> = ({
   familyMembers,
 }) => {
-  const [spouses, setSpouses] = useState<
-    { id: number; value: string | null; isDivorced: boolean }[]
-  >([{ id: Date.now(), value: null, isDivorced: false }]);
+  const [spouse, setSpouse] = useState<Spouse>({
+    spouse1: null,
+    spouse2: null,
+    isDivorced: null,
+  });
 
-  const [pair, setPair] = useState<Pair[]>([]); // Для хранения пар супругов
-
-  const addHusbandBlock = () => {
-    // Проверяем, есть ли хотя бы одно заполненное значение
-    const hasEmptyValue = spouses.some(
-      (spouse) => spouse.value === null || spouse.value === ""
-    );
-
-    if (hasEmptyValue) {
-      alert("Пожалуйста, выберите супруга перед добавлением нового блока.");
+  const addHusbandBlock = async () => {
+    if (!spouse.spouse1 || !spouse.spouse2 || !spouse.isDivorced) {
+      alert("Пожалуйста, выберите обоих супругов перед добавлением.");
       return; // Не добавляем новый блок, если есть пустые значения
     }
 
-    // Добавляем текущее состояние в edges
-    const newPair = spouses.map((spouse) => ({
-      id: uuid(),
-      spouseValue: spouse.value || "",
-      isDivorced: spouse.isDivorced,
-    }));
+    try {
+      // Отправка данных о супруге на сервер
+      await axios.post("http://localhost:8000/create-spouse", spouse);
+      alert("Супруг успешно добавлен!");
+    } catch (error) {
+      console.error("Ошибка при добавлении супруга:", error);
+      alert("Ошибка при добавлении супруга");
+    }
+  };
 
-    setPair((prevPair) => [...prevPair, ...newPair]);
-
-    // Добавляем новый блок
-    setSpouses((prev) => [
+  const handleChange = (field: keyof Spouse) => (value: string | null) => {
+    setSpouse((prev) => ({
       ...prev,
-      { id: Date.now(), value: null, isDivorced: false },
-    ]);
+      [field]: value, // Обновляем значение для конкретного поля
+    }));
   };
-  const handleChange = (index: number) => (value: string | null) => {
-    const updatedSpouses = [...spouses];
-    updatedSpouses[index].value = value; // Обновляем значение для конкретного супруга
-    setSpouses(updatedSpouses);
-  };
-
-  const onChange =
-    (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const updatedSpouses = [...spouses];
-      updatedSpouses[index].isDivorced = e.target.checked; // Устанавливаем флаг "Разведен?" для конкретного супруга
-      setSpouses(updatedSpouses);
-    };
 
   return (
     <HusbandsConatainer>
-      {spouses.map((spouse, index) => (
-        <CreateHusbantsBlock key={spouse.id}>
-          <TitleCreateHusbant>Супруг {index + 1}</TitleCreateHusbant>
-          <SelectInfo
-            placeholder="Выберите супруга(у)"
-            value={spouse.value || ""}
-            onChange={(e) => handleChange(index)(e.target.value)}
-          >
-            <option value="">Select spouse</option>
-            {familyMembers.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name}
-              </option>
-            ))}
-          </SelectInfo>
-          <CheckboxHusband
-            checked={spouse.isDivorced}
-            onChange={onChange(index)}
-          >
-            Разведен?
-          </CheckboxHusband>
-        </CreateHusbantsBlock>
-      ))}
-      <ButtonSave onClick={addHusbandBlock}>Add</ButtonSave>
+      <CreateHusbantsBlock>
+        <TitleCreateHusbant>Создание связи</TitleCreateHusbant>
+        <SelectInfo
+          value={spouse.spouse1 || ""}
+          onChange={(e) => handleChange("spouse1")(e.target.value)}
+        >
+          <option value="">Выберите родительский компонент</option>
+          {familyMembers.map((member) => (
+            <option key={member._id} value={member._id}>
+              {member.name} {/* Отображаем имя, но сохраняем ID */}
+            </option>
+          ))}
+        </SelectInfo>
+        <SelectInfo
+          value={spouse.spouse2 || ""}
+          onChange={(e) => handleChange("spouse2")(e.target.value)}
+        >
+          <option value="">Выберите дочерний компонент</option>
+          {familyMembers.map((member) => (
+            <option key={member._id} value={member._id}>
+              {member.name} {/* Отображаем имя, но сохраняем ID */}
+            </option>
+          ))}
+        </SelectInfo>
+        <SelectInfo
+          value={spouse.isDivorced || ""}
+          onChange={(e) => handleChange("isDivorced")(e.target.value)}
+        >
+          <option value="">Выберите связь</option>
+
+          <option value="Сын">Сын</option>
+          <option value="Дочь">Дочь</option>
+          <option value="Жена">Жена</option>
+          <option value="Муж">Муж</option>
+        </SelectInfo>
+      </CreateHusbantsBlock>
+
+      <ButtonSave onClick={addHusbandBlock}>Добавить</ButtonSave>
     </HusbandsConatainer>
   );
 };

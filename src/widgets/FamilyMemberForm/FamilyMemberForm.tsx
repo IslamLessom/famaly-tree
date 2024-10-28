@@ -10,18 +10,22 @@ import {
   UploadInfo,
 } from "./FamilyMemberForm.styled";
 import SpouseContainerComponent from "../SpouseCreateContainer/SpouseContainer";
+import axios from "axios";
+import { Tabs } from "antd";
+import SpouseEdit from "../SpouseEdit/SpouseEdit";
+
 export interface FamilyMember {
-  id?: string;
+  _id?: string; // MongoDB ID
   name: string;
-  birthDate: string;
+  birthday: string;
   mother?: string | null;
   father?: string | null;
 }
 
 interface FamilyMemberFormProps {
-  familyMember?: FamilyMember; // Для редактирования
-  onSave: (member: FamilyMember) => void; // Функция для сохранения
-  familyMembers: Array<FamilyMember>; // Для выбора родителей
+  familyMember?: FamilyMember; // For editing
+  onSave: (member: FamilyMember) => void; // Function for saving
+  familyMembers: Array<FamilyMember>; // For selecting parents
 }
 
 const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
@@ -30,8 +34,9 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
   familyMembers,
 }) => {
   const [formData, setFormData] = useState<Partial<FamilyMember>>({
+    _id: uuid(),
     name: "",
-    birthDate: "",
+    birthday: "",
     mother: null,
     father: null,
   });
@@ -42,81 +47,141 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
     }
   }, [familyMember]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleNameChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      name: value,
+    }));
+  };
+
+  const handleBirthdayChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      birthday: value,
     }));
   };
 
   const handleSelectChange =
     (fieldName: "mother" | "father") => (value: string | null) => {
-      console.log(`Selected ${fieldName}:`, value);
       setFormData((prev) => ({
         ...prev,
         [fieldName]: value,
       }));
     };
 
-  const handleSave = () => {
-    if (formData.name && formData.birthDate) {
-      onSave({
-        ...formData,
-        id: familyMember ? familyMember.id : uuid(), // Устанавливаем ID только при редактировании
-      } as FamilyMember);
-      setFormData({ name: "", birthDate: "", mother: null, father: null }); // Сбрасываем форму
+  const handleSave = async () => {
+    if (formData.name && formData.birthday) {
+      try {
+        const response = familyMember
+          ? await axios.put(
+              `http://localhost:8000/create-tree/${familyMember._id}`, // Correct endpoint for updating
+              {
+                name: formData.name,
+                birthday: formData.birthday, // Исправлено название поля на 'birthday'
+                mother: formData.mother,
+                father: formData.father,
+              }
+            )
+          : await axios.post("http://localhost:8000/create-tree", {
+              name: formData.name,
+              birthday: formData.birthday,
+              mother: formData.mother,
+              father: formData.father,
+            });
+
+        onSave(response.data); // Call onSave to update parent state
+      } catch (error) {
+        console.error("Error saving data:", error);
+      }
+
+      setFormData({
+        _id: "",
+        name: "",
+        birthday: "",
+        mother: null,
+        father: null,
+      }); // Reset form after save
     }
   };
 
+  // Define items for Tabs
+  const items = [
+    {
+      key: "1",
+      label: "Создать человека",
+      children: (
+        <CreateFormContainerStyle>
+          <Container>
+            <Title>{familyMember ? "Edit Member" : "Create Member"}</Title>
+            <ContainerInput>
+              <UploadInfo
+                name="name"
+                value={formData.name || ""}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="Ф.И.О"
+              />
+              <UploadInfo
+                name="birthday"
+                type="date"
+                value={formData.birthday || ""}
+                onChange={(e) => handleBirthdayChange(e.target.value)}
+              />
+              <SelectInfo
+                value={formData.mother || ""}
+                onChange={(e) => handleSelectChange("mother")(e.target.value)}
+              >
+                <option value="">Выберите маму</option>
+                {familyMembers.map((member) => (
+                  <option key={member._id} value={member._id}>
+                    {member.name}
+                  </option>
+                ))}
+              </SelectInfo>
+              <SelectInfo
+                value={formData.father || ""}
+                onChange={(e) => handleSelectChange("father")(e.target.value)}
+              >
+                <option value="">Выберите отца</option>
+                {familyMembers.map((member) => (
+                  <option key={member._id} value={member._id}>
+                    {member.name}
+                  </option>
+                ))}
+              </SelectInfo>
+
+              <ButtonSave onClick={handleSave}>
+                {familyMember ? "Update" : "Create"}
+              </ButtonSave>
+            </ContainerInput>
+          </Container>
+        </CreateFormContainerStyle>
+      ),
+    },
+    familyMember
+      ? null
+      : {
+          key: "2",
+          label: "Создать зависимость",
+          children: (
+            <CreateFormContainerStyle>
+              <SpouseContainerComponent
+                familyMembers={familyMembers}
+                formData={formData}
+              />
+            </CreateFormContainerStyle>
+          ),
+        },
+    {
+      key: "3",
+      label: "Редактировать зависимости",
+      children: <SpouseEdit />,
+    },
+  ].filter(Boolean); // Удаляем любые null элементы
+
   return (
-    <CreateFormContainerStyle>
-      <Container>
-        <Title>{familyMember ? "Edit Member" : "Create Member"}</Title>
-        <ContainerInput>
-          <UploadInfo
-            name="name"
-            value={formData.name || ""}
-            onChange={handleInputChange}
-            placeholder="Ф.И.О"
-          />
-          <UploadInfo
-            name="birthDate"
-            type="date"
-            value={formData.birthDate || ""}
-            onChange={handleInputChange}
-          />
-          <SelectInfo
-            placeholder="Выберите маму"
-            value={formData.mother || ""} // Установите значение для селектора
-            onChange={(e) => handleSelectChange("mother")(e.target.value)}
-          >
-            <option value="">Select Mother</option>
-            {familyMembers.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name}
-              </option>
-            ))}
-          </SelectInfo>
-          <SelectInfo
-            placeholder="Выберите отца"
-            value={formData.father || ""} // Установите значение для селектора
-            onChange={(e) => handleSelectChange("father")(e.target.value)}
-          >
-            <option value="">Select Father</option>
-            {familyMembers.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name}
-              </option>
-            ))}
-          </SelectInfo>
-          <SpouseContainerComponent familyMembers={familyMembers} />
-          <ButtonSave onClick={handleSave}>
-            {familyMember ? "Update" : "Create"}
-          </ButtonSave>
-        </ContainerInput>
-      </Container>
-    </CreateFormContainerStyle>
+    <>
+      <Tabs style={{ marginLeft: "30px" }} defaultActiveKey="1" items={items} />
+    </>
   );
 };
 

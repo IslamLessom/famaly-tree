@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { Handle, Position } from "@xyflow/react";
 import styled from "styled-components";
+import Image from "../../../public/image.png";
 import {
   AgePerson,
   ContainerChild,
@@ -15,7 +16,6 @@ import {
 } from "./CustomNode.styled";
 
 export const CustomNode = memo(({ data }: any) => {
-  console.log(data?.divorced?.length);
   return (
     <NodeContainer>
       <Node>
@@ -25,10 +25,10 @@ export const CustomNode = memo(({ data }: any) => {
         </Options>
         <FullContainer>
           <ContainerChild>
-            <NodeImage src={data.images} alt="" />
+            <NodeImage src={Image} alt="" />
             <ContainerPerson>
-              <NamePerson>{data.label}</NamePerson>
-              <AgePerson>{data.age}</AgePerson>
+              <NamePerson>{data.name}</NamePerson>
+              <AgePerson>{data.birthday}</AgePerson>
             </ContainerPerson>
           </ContainerChild>
         </FullContainer>
