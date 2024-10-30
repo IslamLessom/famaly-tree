@@ -6,12 +6,13 @@ export interface CreatedFamilyMember {
 }
 
 export interface FamilyMember {
-  id(id: any): void;
-  _id?: string;
+  _id?: string; // MongoDB ID
   name: string;
   birthday: string;
   mother?: string | null;
   father?: string | null;
+  spouseId?: string | null;
+  isDivorced?: boolean;
 }
 
 export interface IFamilyNode {

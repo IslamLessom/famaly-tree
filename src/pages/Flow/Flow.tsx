@@ -82,16 +82,14 @@ export const Flow = () => {
         console.log("Nodes:", nodes); // Проверка преобразованных узлов
 
         // Получаем данные о супругах (edges)
-        const spousesResponse = await axios.get(
-          "http://localhost:8000/spouses"
-        );
+        const spousesResponse = await axios.get("http://localhost:8000/pair");
         console.log("Spouses:", spousesResponse.data); // Проверка данных о супругах
 
         const edgesData = spousesResponse.data.map(
           (spouse: {
             spouse1: string;
             spouse2: string;
-            isDivorced: string;
+            isDivorced: boolean;
           }) => ({
             id: `e-${spouse.spouse1}-${spouse.spouse2}`, // Уникальный ID для ребра
             source: spouse.spouse1,

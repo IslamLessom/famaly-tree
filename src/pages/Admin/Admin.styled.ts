@@ -17,3 +17,11 @@ export const CreateContainer = styled.div`
   height: 100vh;
   background-color: #fafafa;
 `;
+
+export const ContainerBlock = styled.div`
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 120px);
+  justify-content: center;
+  align-items: center;
+`;

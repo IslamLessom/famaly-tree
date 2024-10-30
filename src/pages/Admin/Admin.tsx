@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import {
   AdminContainer,
   Container,
+  ContainerBlock,
   CreateContainer,
   Title,
 } from "./Admin.styled";
@@ -44,7 +45,9 @@ const Admin = () => {
     fetchData();
   }, []);
 
-  const handleCreateFamilyMember = (createdFamilyMember: FamilyMember) => {
+  const handleCreateFamilyMember = async (
+    createdFamilyMember: FamilyMember
+  ) => {
     setFamilyMembers((prev) => [
       ...prev,
       {
@@ -56,11 +59,15 @@ const Admin = () => {
 
   const updateFamilyMember = (updatedMember: FamilyMember) => {
     setFamilyMembers((prev) =>
-      prev.map((member) =>
-        member._id === updatedMember._id ? updatedMember : member
-      )
+      prev.map((member) => {
+        console.log("1");
+        console.log(member);
+        console.log("2");
+        console.log(updatedMember);
+        return member._id === updatedMember._id ? updatedMember : member;
+      })
     );
-    setActiveFamilyMemberId(null); // Reset active ID after updating
+    setActiveFamilyMemberId(null);
   };
 
   const onEdit = (_id: string | null) => {
@@ -77,21 +84,25 @@ const Admin = () => {
         {activeFamilyMemberId != null ? (
           <CreateContainer>
             <Title>Edit Node</Title>
-            <FamilyMemberForm
-              familyMember={familyMembers.find(
-                (member) => member._id === activeFamilyMemberId
-              )}
-              familyMembers={familyMembers}
-              onSave={updateFamilyMember}
-            />
+            <ContainerBlock>
+              <FamilyMemberForm
+                familyMember={familyMembers.find(
+                  (member) => member._id === activeFamilyMemberId
+                )}
+                familyMembers={familyMembers}
+                onSave={updateFamilyMember}
+              />
+            </ContainerBlock>
           </CreateContainer>
         ) : (
           <CreateContainer>
             <Title>Create Node</Title>
-            <FamilyMemberForm
-              onSave={handleCreateFamilyMember}
-              familyMembers={familyMembers}
-            />
+            <ContainerBlock>
+              <FamilyMemberForm
+                onSave={handleCreateFamilyMember}
+                familyMembers={familyMembers}
+              />
+            </ContainerBlock>
           </CreateContainer>
         )}
       </Container>

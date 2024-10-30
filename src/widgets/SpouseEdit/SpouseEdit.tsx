@@ -29,9 +29,7 @@ function SpouseEdit() {
     // Fetch data from the API
     const fetchData = async () => {
       try {
-        const spousesResponse = await axios.get(
-          "http://localhost:8000/spouses"
-        );
+        const spousesResponse = await axios.get("http://localhost:8000/pair");
         setSpouses(spousesResponse.data); // Assuming response.data is an array of spouse objects
 
         // Fetch family members
@@ -49,7 +47,7 @@ function SpouseEdit() {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:8000/spouses/${id}`);
+      await axios.delete(`http://localhost:8000/pair/${id}`);
       setSpouses(spouses.filter((spouse) => spouse._id !== id)); // Update state to remove deleted spouse
       message.success("Spouse deleted successfully!");
     } catch (error) {
@@ -76,7 +74,6 @@ function SpouseEdit() {
           renderItem={(item: ItemProps) => (
             <List.Item
               actions={[
-                <a key="list-loadmore-edit">edit</a>,
                 <a
                   key="list-loadmore-delete"
                   onClick={() => handleDelete(item._id)}

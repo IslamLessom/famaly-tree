@@ -8,28 +8,35 @@ import {
   MemberInfoBlock,
   MemberName,
   SearchInput,
-} from "./FamalyMembers.styled"; // Убедитесь, что у вас есть стиль для SearchInput
+} from "./FamalyMembers.styled";
 import { FamilyMember } from "../../pages/Admin/types/Types";
+import axios from "axios";
 
 interface FamilyMembersComponentProps {
-  familyMembers: FamilyMember[];
   onEdit: (_id: string | null) => void;
 }
 
-export const FamilyMembers = ({
-  familyMembers,
-  onEdit,
-}: FamilyMembersComponentProps) => {
+export const FamilyMembers = ({ onEdit }: FamilyMembersComponentProps) => {
   const [searchTerm, setSearchTerm] = useState(""); // Состояние для хранения поискового запроса
+  const [getMembers, setGetMembers] = useState<Array<FamilyMember>>([]); // Состояние для хранения поискового запроса
 
   // Функция для фильтрации членов семьи по имени
-  const filteredMembers = familyMembers.filter((member) =>
+  const filteredMembers = getMembers.filter((member) =>
     member?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Этот эффект сработает при изменении familyMembers
-  useEffect(() => {}, [familyMembers]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/tree");
+        setGetMembers(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
+    fetchData();
+  }, [getMembers]);
   return (
     <FamilyMembersContainer>
       <SearchInput
@@ -38,7 +45,7 @@ export const FamilyMembers = ({
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)} // Обновляем состояние при вводе
       />
-      {filteredMembers.map((member) => (
+      {filteredMembers.map((member: string | any) => (
         <FamilyMemberStyle key={member._id} onClick={() => onEdit(member._id)}>
           <ImageMember src={Image} />
           <MemberInfoBlock>

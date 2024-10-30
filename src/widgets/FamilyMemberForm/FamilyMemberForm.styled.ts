@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Button, Input } from "antd";
 
 export const CreateFormContainerStyle = styled.div`
-  height: calc(100vh - 130px);
+  //height: calc(100vh - 130px);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -14,12 +14,22 @@ export const Container = styled.div`
   background: #ffffff;
   border: 3px solid #d5d7da;
   width: 70%;
-  height: auto;
+  height: 70vh;
   overflow: hidden;
   border-radius: 8px;
   display: flex;
   justify-content: center;
   flex-direction: column;
+  overflow: hidden;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none; /* Для Chrome, Safari и Opera */
+  }
+
+  & {
+    -ms-overflow-style: none; /* Для Internet Explorer и Edge */
+    scrollbar-width: none; /* Для Firefox */
+  }
 `;
 export const Title = styled.div`
   font-size: 30px;
@@ -79,7 +89,7 @@ export const UploadInfo = styled(Input)`
 `;
 export const ButtonSave = styled(Button)`
   margin-bottom: 5px;
-  width: 50%;
+  width: 40%;
   background-color: #7f56d9;
   color: white;
   font-size: 18px;
