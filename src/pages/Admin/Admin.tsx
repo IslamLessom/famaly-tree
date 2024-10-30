@@ -78,7 +78,6 @@ const Admin = () => {
     <AdminContainer>
       <Container>
         <FamilyMembers
-          familyMembers={familyMembers}
           onEdit={onEdit} // Pass onEdit function
         />
         {activeFamilyMemberId != null ? (

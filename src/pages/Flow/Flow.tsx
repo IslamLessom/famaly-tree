@@ -13,8 +13,10 @@ import axios from "axios";
 import { CustomNode } from "../../shared/CustomNode/CustomNode";
 import CustomEdge from "../../shared/CustomEdge/CustomEdge";
 
-const nodeWidth = 500; // Ширина узла
+const nodeWidth = 800; // Ширина узла
 const nodeHeight = 400; // Высота узла
+const horizontalSpacing = 50; // Горизонтальный отступ между узлами
+const verticalSpacing = 100; // Вертикальный отступ между узлами
 
 const nodeTypes = {
   custom: CustomNode,
@@ -23,31 +25,70 @@ const edgeTypes = {
   custom: CustomEdge,
 };
 // Функция для компоновки узлов с использованием Dagre
-const getLayoutedElements = (nodes: any[], edges: any[], direction = "TB") => {
-  const isHorizontal = direction === "LR";
-  const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-
+const getLayoutedElements = (
+  nodes: Array<{ id: string }>,
+  edges: any[],
+  direction: "TB" | "LR" = "TB"
+) => {
+  const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setGraph({ rankdir: direction });
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
 
+  // Устанавливаем размеры узлов
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
   });
 
+  // Добавляем рёбра
   edges.forEach((edge) => {
     dagreGraph.setEdge(edge.source, edge.target);
   });
 
+  // Выполняем компоновку
   dagre.layout(dagreGraph);
 
-  return nodes.map((node) => {
+  // Обновляем позиции узлов
+  const layoutedNodes = nodes.map((node) => {
     const { x, y } = dagreGraph.node(node.id);
     return {
       ...node,
-      position: { x: x - nodeWidth / 2, y: y - nodeHeight / 2 },
+      position: { x: x - nodeWidth / 2, y }, // Центрируем по X
     };
   });
-};
 
+  // Корректируем позиции дочерних узлов
+  const childIndexMap: { [key: string]: number } = {}; // Для отслеживания индекса дочернего узла
+
+  edges.forEach((edge) => {
+    const parentNode = layoutedNodes.find((node) => node.id === edge.source);
+    const childNode = layoutedNodes.find((node) => node.id === edge.target);
+
+    if (parentNode && childNode) {
+      const parentY = parentNode.position.y;
+
+      // Получаем количество дочерних узлов
+      const count = edges.filter((e) => e.source === edge.source).length;
+      const currentChildIndex = childIndexMap[edge.source] || 0;
+
+      if (count === 1) {
+        // Если только один дочерний узел, размещаем его рядом
+        childNode.position.x = parentNode.position.x + 390 + horizontalSpacing; // Сдвигаем вправо с отступом
+        childNode.position.y = parentY; // На одном уровне
+      } else {
+        // Если несколько дочерних узлов, размещаем их ниже с отступом
+        childNode.position.x =
+          parentNode.position.x / 2 +
+          currentChildIndex * (nodeWidth + horizontalSpacing); // Сдвигаем вправо с отступом
+        childNode.position.y = parentY + nodeHeight + verticalSpacing; // Сдвигаем вниз
+
+        // Увеличиваем индекс для следующего дочернего узла
+        childIndexMap[edge.source] = currentChildIndex + 1;
+      }
+    }
+  });
+
+  return layoutedNodes;
+};
 export const Flow = () => {
   const [familyMembers, setFamilyMembers] = useState([]);
   const [familyNodes, setFamilyNodes] = useNodesState([]);
