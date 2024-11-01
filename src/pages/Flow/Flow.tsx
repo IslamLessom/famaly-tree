@@ -12,8 +12,9 @@ import dagre from "dagre";
 import axios from "axios";
 import { CustomNode } from "../../shared/CustomNode/CustomNode";
 import CustomEdge from "../../shared/CustomEdge/CustomEdge";
+import FloatingEdge from "../../shared/CustomEdge/FloatingEdge";
 
-const nodeWidth = 800; // Ширина узла
+const nodeWidth = 650; // Ширина узла
 const nodeHeight = 400; // Высота узла
 const horizontalSpacing = 50; // Горизонтальный отступ между узлами
 const verticalSpacing = 100; // Вертикальный отступ между узлами
@@ -22,8 +23,9 @@ const nodeTypes = {
   custom: CustomNode,
 };
 const edgeTypes = {
-  custom: CustomEdge,
+  floating: FloatingEdge,
 };
+
 // Функция для компоновки узлов с использованием Dagre
 const getLayoutedElements = (
   nodes: Array<{ id: string }>,
@@ -72,7 +74,7 @@ const getLayoutedElements = (
 
       if (count === 1) {
         // Если только один дочерний узел, размещаем его рядом
-        childNode.position.x = parentNode.position.x + 390 + horizontalSpacing; // Сдвигаем вправо с отступом
+        childNode.position.x = parentNode.position.x + 260 + horizontalSpacing; // Сдвигаем вправо с отступом
         childNode.position.y = parentY; // На одном уровне
       } else {
         // Если несколько дочерних узлов, размещаем их ниже с отступом
@@ -89,6 +91,7 @@ const getLayoutedElements = (
 
   return layoutedNodes;
 };
+
 export const Flow = () => {
   const [familyMembers, setFamilyMembers] = useState([]);
   const [familyNodes, setFamilyNodes] = useNodesState([]);
@@ -136,7 +139,7 @@ export const Flow = () => {
             source: spouse.spouse1,
             target: spouse.spouse2,
             label: spouse.isDivorced,
-            type: "custom",
+            type: "floating",
           })
         );
 

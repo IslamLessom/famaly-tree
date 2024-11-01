@@ -7,6 +7,7 @@ import {
   ContainerChild,
   ContainerPerson,
   FullContainer,
+  HandleStyle,
   NamePerson,
   Node,
   NodeContainer,
@@ -28,7 +29,7 @@ export const CustomNode = memo(({ data }: any) => {
   return (
     <NodeContainer>
       <Node>
-        <Handle type="target" position={Position.Top} />
+        <HandleStyle type="target" position={Position.Top} />
         <Options>
           <Status>{data?.spouse?.married_status}</Status>
         </Options>
@@ -41,7 +42,7 @@ export const CustomNode = memo(({ data }: any) => {
             </ContainerPerson>
           </ContainerChild>
         </FullContainer>
-        <Handle type="source" position={Position.Bottom} />
+        <HandleStyle type="source" position={Position.Bottom} />
       </Node>
     </NodeContainer>
   );

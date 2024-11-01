@@ -1,3 +1,4 @@
+import { Handle } from "@xyflow/react";
 import styled from "styled-components";
 
 export const NodeContainer = styled.div`
@@ -64,3 +65,9 @@ export const ContainerChild = styled.div`
   gap: 20px;
 `;
 export const AgePerson = styled.div``;
+export const HandleStyle = styled(Handle)`
+  background-color: #a8a29d !important;
+  height: 0px !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+`;
