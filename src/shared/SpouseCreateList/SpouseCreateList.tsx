@@ -8,7 +8,6 @@ interface SpouseListProps {
   familyMembers: Array<FamilyMember>;
   handleChange: (index: number, value: string | null) => void;
   onChange: (index: number, isChecked: boolean) => void;
-  addHusbandBlock: () => void;
 }
 
 const SpouseList: React.FC<SpouseListProps> = ({
@@ -16,7 +15,6 @@ const SpouseList: React.FC<SpouseListProps> = ({
   familyMembers,
   handleChange,
   onChange,
-  addHusbandBlock,
 }) => (
   <HusbandsConatainer>
     {spouses.map((spouse, index) => (
@@ -30,7 +28,6 @@ const SpouseList: React.FC<SpouseListProps> = ({
         onDivorceChange={onChange}
       />
     ))}
-    <ButtonSave onClick={addHusbandBlock}>Добавить супруга</ButtonSave>
   </HusbandsConatainer>
 );
 

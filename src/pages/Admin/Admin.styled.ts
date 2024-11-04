@@ -21,7 +21,7 @@ export const CreateContainer = styled.div`
 export const ContainerBlock = styled.div`
   display: flex;
   width: 100%;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 180px);
   justify-content: center;
   align-items: center;
 `;

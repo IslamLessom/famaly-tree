@@ -2,7 +2,15 @@ import { getBezierPath, useInternalNode } from "@xyflow/react";
 
 import { getEdgeParams } from "../../utils.ts";
 
-function FloatingEdge({ id, source, target, markerEnd, style }) {
+function FloatingEdge({
+  id,
+  source,
+  target,
+  markerEnd,
+  style,
+  label,
+  animated,
+}) {
   const sourceNode = useInternalNode(source);
   const targetNode = useInternalNode(target);
 
@@ -23,15 +31,30 @@ function FloatingEdge({ id, source, target, markerEnd, style }) {
     targetX: tx,
     targetY: ty,
   });
+  const midX = (sx + tx) / 2;
+  const midY = (sy + ty) / 2;
 
   return (
-    <path
-      id={id}
-      className="react-flow__edge-path"
-      d={edgePath}
-      markerEnd={markerEnd}
-      style={style}
-    />
+    <>
+      <path
+        id={id}
+        className="react-flow__edge-path"
+        d={edgePath}
+        markerEnd={markerEnd}
+        style={style}
+        animated="true"
+      />
+      <text
+        x={midX}
+        y={midY}
+        fill="black" // Цвет текста
+        fontSize="12" // Размер шрифта
+        textAnchor="middle" // Центрируем текст по горизонтали
+        dominantBaseline="middle" // Центрируем текст по вертикали
+      >
+        {label ? "Разведены" : ""}
+      </text>{" "}
+    </>
   );
 }
 

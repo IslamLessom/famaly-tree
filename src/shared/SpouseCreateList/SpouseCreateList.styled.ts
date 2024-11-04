@@ -3,26 +3,7 @@ import { Button } from "antd";
 
 export const HusbandsConatainer = styled.div`
   background: #ffffff;
-  width: 90%;
-  height: 300px;
-  overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid black;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-
-  align-items: center;
-  overflow: hidden;
-  overflow: auto;
-  &::-webkit-scrollbar {
-    display: none; /* Для Chrome, Safari и Opera */
-  }
-
-  & {
-    -ms-overflow-style: none; /* Для Internet Explorer и Edge */
-    scrollbar-width: none; /* Для Firefox */
-  }
+  width: 73%;
 `;
 
 export const ButtonSave = styled(Button)`

@@ -11,6 +11,8 @@ import { FamilyMembers } from "../../widgets/FamilyMembers/FamilyMembers";
 import { FamilyMember, IFamilyNode } from "./types/Types";
 import FamilyMemberForm from "../../widgets/FamilyMemberForm/FamilyMemberForm";
 import axios from "axios";
+import SpouseEdit from "../../widgets/SpouseEdit/SpouseEdit";
+import { Tabs, TabsProps } from "antd";
 
 const Admin = () => {
   const [activeFamilyMemberId, setActiveFamilyMemberId] = useState<
@@ -60,11 +62,7 @@ const Admin = () => {
   const updateFamilyMember = (updatedMember: FamilyMember) => {
     setFamilyMembers((prev) =>
       prev.map((member) => {
-        console.log("1");
-        console.log(member);
-        console.log("2");
-        console.log(updatedMember);
-        return member._id === updatedMember._id ? updatedMember : member;
+        return member._id === updatedMember?._id ? updatedMember : member;
       })
     );
     setActiveFamilyMemberId(null);
@@ -74,6 +72,26 @@ const Admin = () => {
     setActiveFamilyMemberId(_id);
   };
 
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "Tab 1",
+      children: (
+        <ContainerBlock>
+          <FamilyMemberForm
+            onSave={handleCreateFamilyMember}
+            familyMembers={familyMembers}
+          />
+        </ContainerBlock>
+      ),
+    },
+    {
+      key: "2",
+      label: "Tab 2",
+      children: <SpouseEdit />,
+    },
+  ];
+  console.log("famaly memver", familyMembers);
   return (
     <AdminContainer>
       <Container>
@@ -96,12 +114,12 @@ const Admin = () => {
         ) : (
           <CreateContainer>
             <Title>Create Node</Title>
-            <ContainerBlock>
-              <FamilyMemberForm
-                onSave={handleCreateFamilyMember}
-                familyMembers={familyMembers}
-              />
-            </ContainerBlock>
+            <Tabs
+              style={{ marginLeft: "30px" }}
+              defaultActiveKey="1"
+              items={items}
+            />
+            ;
           </CreateContainer>
         )}
       </Container>

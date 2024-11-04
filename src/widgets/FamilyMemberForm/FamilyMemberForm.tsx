@@ -65,24 +65,6 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
       }));
     };
 
-  const addHusbandBlock = () => {
-    // Проверяем, есть ли хотя бы одно заполненное значение
-    const hasEmptyValue = spouses.some(
-      (spouse) => spouse.value === null || spouse.value === ""
-    );
-
-    if (hasEmptyValue) {
-      alert("Пожалуйста, выберите супруга перед добавлением нового блока.");
-      return; // Не добавляем новый блок, если есть пустые значения
-    }
-
-    // Добавляем новый блок
-    setSpouses((prev) => [
-      ...prev,
-      { id: Date.now(), value: null, isDivorced: false },
-    ]);
-  };
-
   const handleChange = (index: number, value: string | null) => {
     const updatedSpouses = [...spouses];
     updatedSpouses[index].value = value; // Обновляем значение для конкретного супруга
@@ -97,23 +79,23 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
 
   const handleSave = async () => {
     if (formData.name && formData.birthday) {
+      const hasParentOrSpouse =
+        formData.father || formData.mother || spouses[0]?.value;
+      // if (!hasParentOrSpouse) {
+      //   alert("Пожалуйста, укажите хотя бы одного родителя или супруга."); // Сообщение об ошибке
+      //   return; // Прекращаем выполнение функции
+      // }
       try {
-        // Создаем массив пар супругов
-        const newPairs = spouses.map((spouse) => ({
-          spouseId: spouse.value || "",
-          isDivorced: spouse.isDivorced,
-        }));
-
         // Объединяем данные о члене семьи и супруге в один объект
         const memberData = {
           name: formData.name,
           birthday: formData.birthday,
-          mother: formData.mother,
-          father: formData.father,
-          spouseId: newPairs.map((pair) => pair.spouseId), // Сохраняем всех супругов
-          isDivorced: newPairs.some((pair) => pair.isDivorced), // Если хотя бы один разведён, то true
+          mother: formData?.mother,
+          father: formData?.father,
+          spouseId: spouses[0]?.value, // Сохраняем только одного супруга
+          isDivorced: spouses[0]?.isDivorced || false, // Если хотя бы один разведён, то true
         };
-
+        console.log(memberData);
         const memberResponse = familyMember
           ? await axios.put(
               `http://localhost:8000/tree/${familyMember._id}`,
@@ -122,8 +104,6 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
           : await axios.post("http://localhost:8000/tree", memberData);
 
         onSave(memberResponse.data.member); // Обновляем состояние родителя
-
-        alert("Данные успешно сохранены на сервере!");
 
         // Сброс формы после сохранения
         setFormData({
@@ -137,8 +117,11 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
         });
 
         setSpouses([{ id: Date.now(), value: null, isDivorced: false }]); // Сброс состояния супругов
-      } catch (error) {
-        console.error("Error saving data:", error);
+      } catch (error: any) {
+        console.error(
+          "Error saving data:",
+          error.response ? error.response.data : error.message
+        );
       }
     }
   };
@@ -157,15 +140,14 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
             onBirthdayChange={handleBirthdayChange}
             onSelectChange={handleSelectChange}
             familyMembers={familyMembers}
+            famalyMember={familyMember}
           />
 
-          {/* Компонент для добавления супругов */}
           <SpouseList
             spouses={spouses}
             familyMembers={familyMembers}
             handleChange={handleChange}
             onChange={onChange}
-            addHusbandBlock={addHusbandBlock}
           />
 
           <ButtonSave onClick={handleSave}>

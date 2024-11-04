@@ -36,7 +36,7 @@ export const FamilyMembers = ({ onEdit }: FamilyMembersComponentProps) => {
     };
 
     fetchData();
-  }, [getMembers]);
+  }, []);
   return (
     <FamilyMembersContainer>
       <SearchInput

@@ -15,9 +15,9 @@ export const SelectInfo = styled.select`
 `;
 
 export const CreateHusbantsBlock = styled.div`
-  margin-left: auto;
-  margin-right: auto;
   margin-bottom: 10px;
   width: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
 `;
