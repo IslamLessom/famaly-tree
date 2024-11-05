@@ -5,7 +5,7 @@ export const Title = styled.h2`
   margin: 0px;
   margin-bottom: 20px;
   padding: 20px 20px;
-  background-color: #7f56d9;
+  background-color: white;
   color: white;
   font-size: 33px;
 `;
@@ -15,7 +15,7 @@ export const Container = styled.div`
 `;
 export const CreateContainer = styled.div`
   height: 100vh;
-  background-color: #fafafa;
+  background-color: white;
 `;
 
 export const ContainerBlock = styled.div`

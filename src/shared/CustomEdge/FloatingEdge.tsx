@@ -10,7 +10,7 @@ function FloatingEdge({
   style,
   label,
   animated,
-}) {
+}: any) {
   const sourceNode = useInternalNode(source);
   const targetNode = useInternalNode(target);
 
@@ -38,11 +38,10 @@ function FloatingEdge({
     <>
       <path
         id={id}
-        className="react-flow__edge-path"
+        className={`react-flow__edge-path ${animated ? "animated" : ""}`}
         d={edgePath}
         markerEnd={markerEnd}
         style={style}
-        animated="true"
       />
       <text
         x={midX}

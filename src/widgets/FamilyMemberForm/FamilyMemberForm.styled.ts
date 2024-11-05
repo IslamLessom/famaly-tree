@@ -12,7 +12,7 @@ export const CreateFormContainerStyle = styled.div`
 `;
 export const Container = styled.div`
   background: #ffffff;
-  border: 3px solid #d5d7da;
+  box-shadow: -1px 0px 1px 1px #00000042;
   width: 70%;
   height: 70vh;
   overflow: hidden;
@@ -90,7 +90,7 @@ export const UploadInfo = styled(Input)`
 export const ButtonSave = styled(Button)`
   margin-bottom: 5px;
   width: 40%;
-  background-color: #7f56d9;
+  background-color: #0957d0;
   color: white;
   font-size: 18px;
 `;

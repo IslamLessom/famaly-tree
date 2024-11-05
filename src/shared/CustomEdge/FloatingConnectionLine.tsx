@@ -9,7 +9,7 @@ function FloatingConnectionLine({
   fromPosition,
   toPosition,
   fromNode,
-}) {
+}: any) {
   if (!fromNode) {
     return null;
   }

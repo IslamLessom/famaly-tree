@@ -75,7 +75,7 @@ const Admin = () => {
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: "Tab 1",
+      label: "Создать связь",
       children: (
         <ContainerBlock>
           <FamilyMemberForm
@@ -87,11 +87,10 @@ const Admin = () => {
     },
     {
       key: "2",
-      label: "Tab 2",
+      label: "Редактировать связи",
       children: <SpouseEdit />,
     },
   ];
-  console.log("famaly memver", familyMembers);
   return (
     <AdminContainer>
       <Container>
@@ -100,7 +99,6 @@ const Admin = () => {
         />
         {activeFamilyMemberId != null ? (
           <CreateContainer>
-            <Title>Edit Node</Title>
             <ContainerBlock>
               <FamilyMemberForm
                 familyMember={familyMembers.find(
@@ -113,13 +111,11 @@ const Admin = () => {
           </CreateContainer>
         ) : (
           <CreateContainer>
-            <Title>Create Node</Title>
             <Tabs
               style={{ marginLeft: "30px" }}
               defaultActiveKey="1"
               items={items}
             />
-            ;
           </CreateContainer>
         )}
       </Container>

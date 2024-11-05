@@ -18,7 +18,7 @@ export const FamilyMembersContainer = styled.div`
   align-items: flex-start;
   padding: 20px;
   padding-top: 70px;
-  background-color: #7f56d9;
+  background-color: #f8fafd;
 `;
 export const SearchInput = styled(Input)`
   width: 98%;
@@ -34,7 +34,7 @@ export const FamilyMemberStyle = styled.div`
   padding: 15px;
   border-radius: 10px;
   width: 90%;
-  border: 3px solid #d5d7da;
+  box-shadow: 1px 1px 1px 1px #00000042;
   cursor: pointer;
 `;
 export const ImageMember = styled.img`

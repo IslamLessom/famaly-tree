@@ -1,4 +1,4 @@
-import { Input } from "antd";
+import { Input, Select } from "antd";
 import styled from "styled-components";
 
 export const UploadInfo = styled(Input)`
@@ -6,9 +6,8 @@ export const UploadInfo = styled(Input)`
   cursor: pointer;
 `;
 
-export const SelectInfo = styled.select`
-  width: 50%;
-  border: none;
-  padding: 10px;
+export const SelectInfo = styled(Select)`
+  width: 60%;
+
   cursor: pointer;
 `;

@@ -8,14 +8,14 @@ import {
   useNodesState,
   useEdgesState,
 } from "@xyflow/react";
-import { CustomNode } from "../../shared/CustomNode/CustomNode";
+import { CustomNode } from "../../shared/CustomNode/CustomNodeComponents/CustomNode";
 import FloatingEdge from "../../shared/CustomEdge/FloatingEdge";
 import { getFamilyNodes } from "./FamilyDataMapper";
-import { PairNode } from "../../shared/CustomNode/PairNode";
+import { PairNode } from "../../shared/CustomNode/PairNode/PairNode";
 
 const nodeTypes = {
   pair: PairNode,
-  default: CustomNode,
+  defaultCustom: CustomNode,
 };
 const edgeTypes = {
   floating: FloatingEdge,

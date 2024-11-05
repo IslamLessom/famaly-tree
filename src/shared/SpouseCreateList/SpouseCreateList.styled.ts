@@ -3,7 +3,7 @@ import { Button } from "antd";
 
 export const HusbandsConatainer = styled.div`
   background: #ffffff;
-  width: 73%;
+  width: 100%;
 `;
 
 export const ButtonSave = styled(Button)`

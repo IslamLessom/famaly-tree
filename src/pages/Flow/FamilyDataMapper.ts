@@ -1,10 +1,10 @@
 import axios from "axios";
 import dagre from "dagre";
 
-const nodeWidth = 650; // Ширина узла
-const nodeHeight = 400; // Высота узла
-const horizontalSpacing = 50; // Горизонтальный отступ между узлами
-const verticalSpacing = 100; // Вертикальный отступ между узлами
+const nodeWidth = 300; // Ширина узла
+const nodeHeight = 300; // Высота узла
+const horizontalSpacing = 300;
+const verticalSpacing = 200;
 
 interface FamilyMemberPartial {
   _id: string;
@@ -23,10 +23,9 @@ export async function getFamilyNodes() {
     const familyMembers = (await axios.get("http://localhost:8000/tree")).data;
     const pairs = (await axios.get("http://localhost:8000/pair")).data;
 
-    const nodesRaw = [];
-    const edges = [];
+    const nodesRaw: any = [];
+    const edges: any = [];
     const pairMap: { [memberId: string]: string[] } = {};
-
     pairs.forEach((pair: PairPartial) => {
       if (!pairMap[pair.spouse1]) pairMap[pair.spouse1] = [];
       if (!pairMap[pair.spouse2]) pairMap[pair.spouse2] = [];
@@ -76,7 +75,7 @@ export async function getFamilyNodes() {
         nodesRaw.push({
           id: node._id,
           data: { member: node },
-          type: "default",
+          type: "defaultCustom",
         });
         spouses.forEach((spouse) => {
           nodesRaw.push({
@@ -84,16 +83,16 @@ export async function getFamilyNodes() {
             data: {
               member: findNodeById(spouse),
             },
-            type: "default",
+            type: "defaultCustom",
           });
           const isDivorced = getDivorcedStatus(node._id, spouse);
-          console.log("isdiv");
-          console.log(isDivorced);
+
           edges.push({
             id: `${node._id}-${spouse}`,
             source: node._id,
             target: spouse,
             label: isDivorced,
+            animated: isDivorced,
           });
           const children = findChildrenOfNodeById(spouse);
           children.forEach((child: FamilyMemberPartial) => {
@@ -101,6 +100,7 @@ export async function getFamilyNodes() {
               id: `${spouse}-${child._id}`,
               source: spouse,
               target: child._id,
+              animated: isDivorced,
             });
             addFamilyMember(child);
           });
@@ -117,6 +117,7 @@ export async function getFamilyNodes() {
             id: `${node._id}-${child._id}`,
             source: node._id,
             target: child._id,
+            animated: false,
           });
           addFamilyMember(child);
         });
@@ -124,7 +125,7 @@ export async function getFamilyNodes() {
         nodesRaw.push({
           id: node._id,
           data: { member: node },
-          type: "default",
+          type: "defaultCustom",
         });
       }
     }
@@ -143,10 +144,15 @@ export async function getFamilyNodes() {
 const getLayoutedElements = (
   nodes: Array<{ id: string }>,
   edges: any[],
-  direction: "TB" | "LR" = "TB"
+  customHorizontalSpacing: number = horizontalSpacing,
+  customVerticalSpacing: number = verticalSpacing
 ) => {
   const dagreGraph = new dagre.graphlib.Graph();
-  dagreGraph.setGraph({ rankdir: direction });
+  dagreGraph.setGraph({
+    rankdir: "TB",
+    nodesep: customHorizontalSpacing,
+    ranksep: customVerticalSpacing,
+  });
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   nodes.forEach((node) => {
@@ -163,39 +169,30 @@ const getLayoutedElements = (
     const { x, y } = dagreGraph.node(node.id);
     return {
       ...node,
-      position: { x: x - nodeWidth / 2, y },
+      position: { x: x, y },
     };
   });
 
   const childIndexMap: { [key: string]: number } = {};
 
-  edges.forEach((edge) => {
+  {
+    /*edges.forEach((edge) => {
     const parentNode = layoutedNodes.find((node) => node.id === edge.source);
     const childNode = layoutedNodes.find((node) => node.id === edge.target);
 
     if (parentNode && childNode) {
       const parentY = parentNode.position.y;
 
-      // Получаем количество дочерних узлов
-      const count = edges.filter((e) => e.source === edge.source).length;
       const currentChildIndex = childIndexMap[edge.source] || 0;
 
-      if (count === 1) {
-        // Если только один дочерний узел, размещаем его рядом
-        childNode.position.x = parentNode.position.x + 260 + horizontalSpacing; // Сдвигаем вправо с отступом
-        childNode.position.y = parentY; // На одном уровне
-      } else {
-        // Если несколько дочерних узлов, размещаем их ниже с отступом
-        childNode.position.x =
-          parentNode.position.x / 2 +
-          currentChildIndex * (nodeWidth + horizontalSpacing); // Сдвигаем вправо с отступом
-        childNode.position.y = parentY + nodeHeight + verticalSpacing; // Сдвигаем вниз
+      childNode.position.x = parentNode.position.x;
+      childNode.position.y =
+        parentNode.position.y + nodeHeight + customVerticalSpacing;
 
-        // Увеличиваем индекс для следующего дочернего узла
-        childIndexMap[edge.source] = currentChildIndex + 1;
-      }
+      childIndexMap[edge.source] = currentChildIndex + 1;
     }
-  });
+  });*/
+  }
 
   return layoutedNodes;
 };

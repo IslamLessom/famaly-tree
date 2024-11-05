@@ -140,7 +140,7 @@ const FamilyMemberForm: React.FC<FamilyMemberFormProps> = ({
             onBirthdayChange={handleBirthdayChange}
             onSelectChange={handleSelectChange}
             familyMembers={familyMembers}
-            famalyMember={familyMember}
+            familyMember={familyMember}
           />
 
           <SpouseList
