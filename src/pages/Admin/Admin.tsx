@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
   AdminContainer,
   Container,
   ContainerBlock,
   CreateContainer,
-  Title,
 } from "./Admin.styled";
 import { FamilyMembers } from "../../widgets/FamilyMembers/FamilyMembers";
 import { FamilyMember, IFamilyNode } from "./types/Types";
-import FamilyMemberForm from "../../widgets/FamilyMemberForm/FamilyMemberForm";
+import FamilyMemberForm from "../../features/createUserManagement/ui/FamilyMemberForm/FamilyMemberForm";
 import axios from "axios";
 import SpouseEdit from "../../widgets/SpouseEdit/SpouseEdit";
 import { Tabs, TabsProps } from "antd";
@@ -19,7 +18,7 @@ const Admin = () => {
     string | null
   >(null);
   const [familyMembers, setFamilyMembers] = useState<Array<FamilyMember>>([]);
-  const [familyNodes, setFamilyNodes] = useState<IFamilyNode[]>([]);
+  const [_, setFamilyNodes] = useState<IFamilyNode[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {

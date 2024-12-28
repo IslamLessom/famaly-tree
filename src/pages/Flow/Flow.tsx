@@ -2,16 +2,17 @@ import { useCallback, useEffect } from "react";
 import {
   ReactFlow,
   Controls,
-  Background,
   applyNodeChanges,
   NodeChange,
   useNodesState,
   useEdgesState,
 } from "@xyflow/react";
-import { CustomNode } from "../../shared/CustomNode/CustomNodeComponents/CustomNode";
-import FloatingEdge from "../../shared/CustomEdge/FloatingEdge";
+import { CustomNode } from "../../features/familyTree/ui/CustomNode/CustomNodeComponents/CustomNode";
+import FloatingEdge from "../../features/familyTree/ui/CustomEdge/FloatingEdge";
 import { getFamilyNodes } from "./FamilyDataMapper";
-import { PairNode } from "../../shared/CustomNode/PairNode/PairNode";
+import { PairNode } from "../../features/familyTree/ui/CustomNode/PairNode/PairNode";
+import DownloadButton from "../../widgets/Dowload/Dowload";
+import Legends from "../../shared/ui/Legends/Legends";
 
 const nodeTypes = {
   pair: PairNode,
@@ -42,7 +43,7 @@ export const Flow = () => {
   }, []);
 
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: "100%", backgroundColor: "#f8fafd" }}>
       <ReactFlow
         nodes={familyNodes}
         edges={edges}
@@ -50,8 +51,11 @@ export const Flow = () => {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
       >
-        <Background />
         <Controls />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <DownloadButton />
+          <Legends />
+        </div>
       </ReactFlow>
     </div>
   );

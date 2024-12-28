@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "../../../public/image.png";
 import {
   FamilyMemberStyle,
@@ -17,8 +17,8 @@ interface FamilyMembersComponentProps {
 }
 
 export const FamilyMembers = ({ onEdit }: FamilyMembersComponentProps) => {
-  const [searchTerm, setSearchTerm] = useState(""); // Состояние для хранения поискового запроса
-  const [getMembers, setGetMembers] = useState<Array<FamilyMember>>([]); // Состояние для хранения поискового запроса
+  const [searchTerm, setSearchTerm] = useState("");
+  const [getMembers, setGetMembers] = useState<Array<FamilyMember>>([]);
 
   // Функция для фильтрации членов семьи по имени
   const filteredMembers = getMembers.filter((member) =>
@@ -50,7 +50,16 @@ export const FamilyMembers = ({ onEdit }: FamilyMembersComponentProps) => {
           <ImageMember src={Image} />
           <MemberInfoBlock>
             <MemberName>{member.name}</MemberName>
-            <MemberDate>{member.birthday}</MemberDate>
+            <MemberDate>
+              {member.birthday &&
+                new Date(member.birthday)
+                  .toLocaleDateString("ru-RU", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })
+                  .replace(/\//g, ".")}
+            </MemberDate>
           </MemberInfoBlock>
         </FamilyMemberStyle>
       ))}
