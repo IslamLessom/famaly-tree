@@ -1,6 +1,5 @@
 import { memo, useState } from "react";
 import { Position } from "@xyflow/react";
-import Image from "../../../../../../public/image.png";
 import {
   AgePerson,
   ContainerChild,
@@ -19,6 +18,7 @@ interface Member {
   _id: string;
   name: string;
   birthday: string | Date;
+  dateOfDeath: string | Date;
   [key: string]: any;
 }
 
@@ -49,7 +49,6 @@ export const CustomNode = memo(({ data }: CustomNodeProps) => {
   };
 
   const formattedDate = formatBirthday(member.birthday);
-
   return (
     <NodeContainer>
       <div onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }}>
@@ -57,11 +56,30 @@ export const CustomNode = memo(({ data }: CustomNodeProps) => {
           <HandleStyle type="target" position={Position.Top} />
           <FullContainer>
             <ContainerChild>
-              <NodeImage src={Image} alt={member.name} />
+              {member.photoUrl && (
+                <NodeImage src={member.photoUrl} alt={member.name} />
+              )}
               <ContainerPerson>
                 <NamePerson>{member.name}</NamePerson>
                 <AgePerson>{formattedDate}</AgePerson>
-                <AgePerson>13.06.2023</AgePerson>
+                <AgePerson>
+                  {member.dateOfDeath != null
+                    ? member.dateOfDeath instanceof Date
+                      ? member.dateOfDeath.toLocaleDateString("ru-RU", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })
+                      : new Date(member.dateOfDeath).toLocaleDateString(
+                          "ru-RU",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          }
+                        )
+                    : ""}
+                </AgePerson>
               </ContainerPerson>
             </ContainerChild>
           </FullContainer>

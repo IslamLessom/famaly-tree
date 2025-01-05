@@ -6,11 +6,12 @@ import { Select } from "antd";
 interface FamilyMemberInputProps {
   name: string;
   birthday: string;
-  dayOfDeath: string;
+  dateOfDeath: string;
   mother?: string | null;
   father?: string | null;
   onNameChange: (value: string) => void;
   onBirthdayChange: (value: string) => void;
+  onDateOfDeathChange: (value: string) => void;
   onSelectChange: (
     fieldName: "mother" | "father"
   ) => (value: string | null) => void;
@@ -20,11 +21,12 @@ interface FamilyMemberInputProps {
 const FamilyMemberInput: React.FC<FamilyMemberInputProps> = ({
   name,
   birthday,
-  dayOfDeath,
+  dateOfDeath,
   mother,
   father,
   onNameChange,
   onBirthdayChange,
+  onDateOfDeathChange,
   onSelectChange,
   familyMembers,
 }) => (
@@ -36,16 +38,32 @@ const FamilyMemberInput: React.FC<FamilyMemberInputProps> = ({
       placeholder="Ф.И.О"
     />
     <UploadInfo
-      name="birthday"
-      type="date"
+      placeholder="Выберите дату рождения"
+      className="textbox-n"
+      type="text"
+      onFocus={() =>
+        ((document.getElementById("date") as HTMLInputElement).type = "date")
+      }
+      onBlur={() =>
+        ((document.getElementById("date") as HTMLInputElement).type = "text")
+      }
+      id="date"
       value={birthday}
       onChange={(e) => onBirthdayChange(e.target.value)}
     />
     <UploadInfo
-      name="dayOfDeath"
-      type="date"
-      value={dayOfDeath}
-      onChange={(e) => onBirthdayChange(e.target.value)}
+      placeholder="Выберите дату смерти"
+      className="textbox-n"
+      type="text"
+      onFocus={() =>
+        ((document.getElementById("date2") as HTMLInputElement).type = "date")
+      }
+      onBlur={() =>
+        ((document.getElementById("date2") as HTMLInputElement).type = "text")
+      }
+      id="date2"
+      value={dateOfDeath}
+      onChange={(e) => onDateOfDeathChange(e.target.value)}
     />
     <SelectInfo
       value={mother || ""}

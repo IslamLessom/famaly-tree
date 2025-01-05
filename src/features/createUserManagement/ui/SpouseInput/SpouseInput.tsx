@@ -5,6 +5,9 @@ import {
   CreateHusbantsBlock,
 } from "./SpouseInput.styled";
 import { FamilyMember } from "../../../../pages/Admin/types/Types";
+import { Select } from "antd";
+
+const { Option } = Select;
 
 interface SpouseInputProps {
   index: number;
@@ -24,24 +27,24 @@ const SpouseInput: React.FC<SpouseInputProps> = ({
   onDivorceChange,
 }) => (
   <CreateHusbantsBlock>
-    <SelectInfo
+    <Select
       value={spouseValue || ""}
       onChange={(value: unknown) => onSpouseChange(index, value as string)}
+      placeholder="Выберите супруга(у)"
     >
-      <option value="">Выберите супруга(у)</option>
+      <Option value="">Выберите супруга(у)</Option>
       {familyMembers.map((member) => (
-        <option key={member._id} value={member._id}>
+        <Option key={member._id} value={member._id}>
           {member.name}
-        </option>
+        </Option>
       ))}
-    </SelectInfo>
+    </Select>
     <CheckboxHusband
       checked={isDivorced}
       onChange={(e) => {
         onDivorceChange(index, e.target.checked);
-      }} // () => fix if error
+      }}
     >
-      {" "}
       Разведен?
     </CheckboxHusband>
   </CreateHusbantsBlock>

@@ -1,6 +1,5 @@
 import { memo, useState } from "react";
 import { Position } from "@xyflow/react";
-import Image from "../../../../../../public/image.png";
 import {
   AgePerson,
   ContainerChild,
@@ -51,7 +50,7 @@ export const PairNode = memo(({ data }: { data: any }) => {
           <ContainerChild>
             <PairContinerForImageStyle>
               <NodeImage
-                src={Image}
+                src={firstMember.photoUrl}
                 alt=""
                 onClick={() =>
                   firstMember?._id && handleMemberClick(firstMember._id)
@@ -59,7 +58,7 @@ export const PairNode = memo(({ data }: { data: any }) => {
                 style={{ cursor: "pointer" }}
               />
               <NodeImage
-                src={Image}
+                src={secondMember.photoUrl}
                 alt=""
                 onClick={() =>
                   secondMember?._id && handleMemberClick(secondMember._id)

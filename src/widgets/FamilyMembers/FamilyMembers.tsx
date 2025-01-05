@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Image from "../../../public/image.png";
 import {
   FamilyMemberStyle,
   FamilyMembersContainer,
@@ -47,7 +46,7 @@ export const FamilyMembers = ({ onEdit }: FamilyMembersComponentProps) => {
       />
       {filteredMembers.map((member: string | any) => (
         <FamilyMemberStyle key={member._id} onClick={() => onEdit(member._id)}>
-          <ImageMember src={Image} />
+          <ImageMember src={member.photoUrl} />
           <MemberInfoBlock>
             <MemberName>{member.name}</MemberName>
             <MemberDate>
